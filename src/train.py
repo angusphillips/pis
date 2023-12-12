@@ -9,10 +9,12 @@ from pytorch_lightning import (
     Trainer,
     seed_everything,
 )
-from pytorch_lightning.loggers import LightningLoggerBase
-
+from pytorch_lightning.loggers.logger import Logger
 from src.logger.jam_wandb import JamWandb
 from src.utils import lht_utils
+
+
+# from lightning import LightningModule, Callback, LightningDataModule, Trainer, seed_everything
 
 try:
     from jammy.utils.debug import decorate_exception_hook
@@ -52,6 +54,8 @@ def train(config: DictConfig) -> Optional[float]:
     )
     model: LightningModule = hydra.utils.instantiate(config.model.module, config.model)
 
+    print('hellooooo is the model pytorch_lightning.LightningModule?', isinstance(model, LightningModule))
+
     # Init lightning callbacks
     callbacks: List[Callback] = []
     if "callbacks" in config:
@@ -63,7 +67,7 @@ def train(config: DictConfig) -> Optional[float]:
                 callbacks.append(hydra.utils.instantiate(cb_conf))
 
     # Init lightning loggers
-    logger: List[LightningLoggerBase] = []
+    logger: List[Logger] = []
     if "logger" in config:
         for _, lg_conf in config.logger.items():
             if "_target_" in lg_conf:

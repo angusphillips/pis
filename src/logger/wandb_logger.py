@@ -25,15 +25,16 @@ from weakref import ReferenceType
 
 import torch.nn as nn
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-from pytorch_lightning.loggers.base import LightningLoggerBase, rank_zero_experiment
-from pytorch_lightning.utilities import _module_available, rank_zero_only
+# from pytorch_lightning.loggers.base import LightningLoggerBase, rank_zero_experiment
+from pytorch_lightning.loggers.logger import Logger, rank_zero_experiment
+from pytorch_lightning.utilities import rank_zero_only
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from pytorch_lightning.utilities.imports import _compare_version
 from pytorch_lightning.utilities.warnings import WarningCache
 
 warning_cache = WarningCache()
 
-_WANDB_AVAILABLE = _module_available("wandb")
+# _WANDB_AVAILABLE = _module_available("wandb")
 _WANDB_GREATER_EQUAL_0_10_22 = _compare_version("wandb", operator.ge, "0.10.22")
 
 try:
@@ -46,7 +47,7 @@ except ImportError:
 from .jam_wandb import JamWandb
 
 
-class WandbLogger(LightningLoggerBase):
+class WandbLogger(Logger):
     r"""
     Log using `Weights and Biases <https://docs.wandb.ai/integrations/lightning>`_.
 

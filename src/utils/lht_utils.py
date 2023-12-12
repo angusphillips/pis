@@ -150,7 +150,7 @@ def log_hyperparameters(
     datamodule: pl.LightningDataModule,
     trainer: pl.Trainer,
     callbacks: List[pl.Callback],
-    logger: List[pl.loggers.LightningLoggerBase],
+    logger: List[pl.loggers.logger.Logger],
 ) -> None:
     """This method controls which parameters from Hydra config are saved by Lightning loggers.
 
@@ -207,13 +207,13 @@ def finish(  # pylint: disable= unused-argument
     datamodule: pl.LightningDataModule,
     trainer: pl.Trainer,
     callbacks: List[pl.Callback],
-    logger: List[pl.loggers.LightningLoggerBase],
+    logger: List[pl.loggers.logger.Logger],
 ) -> None:
     """Makes sure everything closed properly."""
 
     # without this sweeps with wandb logger might crash!
     for clogger in logger:
-        from src.logger.wandb_logger import WandbLogger
+        from pytorch_lightning.loggers.wandb import WandbLogger
 
         if isinstance(clogger, WandbLogger):
             from src.logger.jam_wandb import JamWandb
