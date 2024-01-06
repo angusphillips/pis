@@ -71,7 +71,7 @@ def extras(config: DictConfig) -> None:
     log = get_logger(__name__)
 
     # quick link
-    rank_zero_only(link_hyd_run)()
+    # rank_zero_only(link_hyd_run)()
     # disable python warnings if <config.ignore_warnings=True>
     if config.get("ignore_warnings"):
         log.info("Disabling python warnings! <config.ignore_warnings=True>")

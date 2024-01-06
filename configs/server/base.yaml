@@ -1,0 +1,31 @@
+num_workers: 8
+
+paths:
+  experiments: results
+
+hydra:
+  sweep:
+    dir: ./${paths.experiments}/${group}/${hydra.job.override_dirname}/seed=${seed}
+  run:
+    dir: ./${paths.experiments}/${group}/${hydra.job.override_dirname}/seed=${seed}
+
+  job:
+    env_set:
+      TERM: xterm-256color
+      HYDRA_FULL_ERROR: "1"
+      JAM_PROJ_PATH: /vols/ziz/not-backed-up/anphilli/pis
+    config:
+      override_dirname:
+        exclude_keys: [name, group, seed, mode, logging]
+    chdir: True
+
+  job_logging:
+    formatters:
+      simple:
+        format: '[%(levelname)s] - %(message)s'
+    handlers:
+      file:
+        filename: run.log
+    root:
+      handlers: [console, file]
+

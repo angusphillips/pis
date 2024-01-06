@@ -21,13 +21,13 @@ name: "ou"
 seed: 12345
 print_config: false
 
+num_steps: 100
+
 trainer:
   min_epochs: 1
   max_epochs: 10
   max_steps: 300
   log_every_n_steps: 20
-
-  weights_summary: null
 
 callbacks:
   sample:

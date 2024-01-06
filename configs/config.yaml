@@ -10,7 +10,7 @@ defaults:
   - logger: null # set logger here or use command line (e.g. `python run.py logger=wandb`)
 
   - mode: default.yaml
-
+  - server: local
   - experiment: null
   - hparams_search: null
 
@@ -18,24 +18,8 @@ defaults:
   - override hydra/hydra_logging: colorlog
   - override hydra/job_logging: colorlog
   # use joblib for multi runs
-  - override hydra/launcher: joblib
+  # - override hydra/launcher: joblib
 
-hydra:
-  sweep:
-    dir: ./${paths.experiments}/${group}/${hydra.job.override_dirname}/seed=${seed}
-  run:
-    dir: ./${paths.experiments}/${group}/${hydra.job.override_dirname}/seed=${seed}
-  job:
-    env_set:
-      TERM: xterm-256color
-      HYDRA_FULL_ERROR: "1"
-      JAM_PROJ_PATH: /vols/ziz/not-backed-up/anphilli/pis
-    config:
-      override_dirname:
-        exclude_keys: [name, group, seed, mode, logging]
-  launcher:
-    # override the number of jobs for joblib
-    n_jobs: 6
 # path to original working directory
 # hydra hijacks working directory by changing it to the current log directory,
 # so it's useful to have this path as a special variable

@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch as th
 from einops import rearrange
-from jamtorch.utils import as_numpy, no_grad_func
-
+from jamtorch.utils import no_grad_func
+from src.utils.jamtorch_utils import as_numpy
 
 # pylint: disable=invalid-name
 def traj_plot(traj_len, samples, xlabel, ylabel, title="", fsave="img.png"):

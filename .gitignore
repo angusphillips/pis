@@ -147,3 +147,5 @@ logs/
 wandb/
 .env
 .autoenv
+
+results/

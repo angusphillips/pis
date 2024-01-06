@@ -1,6 +1,6 @@
 # pylint: disable=unused-import
 import pytorch_lightning as pl
-from jamtorch.utils import as_numpy
+from src.utils.jamtorch_utils import as_numpy
 from pytorch_lightning import Callback
 
 from src.callbacks.metric_cb import VizSampleDist

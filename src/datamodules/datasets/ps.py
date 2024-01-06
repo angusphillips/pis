@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch as th
 import torch.distributions as D
-from jamtorch.utils import as_numpy
+from src.utils.jamtorch_utils import as_numpy
 from torch.distributions.mixture_same_family import MixtureSameFamily
 
 from .base_set import BaseSet

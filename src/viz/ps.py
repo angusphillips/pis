@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from jamtorch.utils import as_numpy
+from src.utils.jamtorch_utils import as_numpy
 
 from .wandb_fig import wandb_img
 
