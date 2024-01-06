@@ -21,11 +21,18 @@ defaults:
   - override hydra/launcher: joblib
 
 hydra:
+  sweep:
+    dir: ./${paths.experiments}/${group}/${hydra.job.override_dirname}/seed=${seed}
+  run:
+    dir: ./${paths.experiments}/${group}/${hydra.job.override_dirname}/seed=${seed}
   job:
     env_set:
       TERM: xterm-256color
       HYDRA_FULL_ERROR: "1"
-      JAM_PROJ_PATH: /home/qzhang419/projects/hpis
+      JAM_PROJ_PATH: /vols/ziz/not-backed-up/anphilli/pis
+    config:
+      override_dirname:
+        exclude_keys: [name, group, seed, mode, logging]
   launcher:
     # override the number of jobs for joblib
     n_jobs: 6
@@ -46,7 +53,7 @@ ignore_warnings: True
 
 # check performance on test set, using the best model achieved during training
 # lightning chooses best model based on metric specified in checkpoint callback
-test_after_training: false
+test_after_training: True
 
 # seed for random number generators in pytorch, numpy and python.random
 seed: null
@@ -55,5 +62,10 @@ seed: null
 # should be used along with experiment mode
 name: null
 
+group: ${name}
+
 # auto select gpu with lowest util rate
 agpu: false
+
+num_smc_iters: 100
+save_samples: False

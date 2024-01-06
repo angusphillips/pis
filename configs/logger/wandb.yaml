@@ -4,7 +4,8 @@ wandb:
   # _target_: src.logger.wandb_logger.WandbLogger
   _target_: pytorch_lightning.loggers.wandb.WandbLogger
   project: "PIS_benchmark"
-  name: ${name}
+  name: ${hydra:job.override_dirname}
+  group: ${group}
   save_dir: "."
   offline: False # set True to store all logs only locally
   id: null # pass correct id to resume experiment!
@@ -12,5 +13,4 @@ wandb:
   log_model: False
   prefix: ""
   job_type: "train"
-  group: ""
   tags: []
