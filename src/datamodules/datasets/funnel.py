@@ -1,7 +1,7 @@
 import torch as th
 import torch.distributions as D
 
-from .base_set import BaseSet
+from .base_set import BaseSet, counter
 
 
 class FunnelSet(BaseSet):
@@ -18,12 +18,13 @@ class FunnelSet(BaseSet):
         return 1
 
     def get_gt_disc(self, x):
-        return -self.funner_log_pdf(x)
+        return -self.funnel_log_pdf(x)
 
     def viz_pdf(self, fsave="density.png", lim=3):  # pylint: disable=no-self-use
         pass
 
-    def funner_log_pdf(self, x):
+    @counter
+    def funnel_log_pdf(self, x):
         dominant_x = x[:, 0]
         log_density_dominant = self.dist_dominant.log_prob(dominant_x)  # (B, )
 

@@ -6,6 +6,15 @@ from torch.utils.data import Dataset
 from src.utils.ksd import KSD
 from src.utils.loss_helper import linear_intepolate_energy, nll_unit_gaussian
 
+from functools import wraps
+
+def counter(func):
+    @wraps(func)
+    def wrapper(self, x):
+        self.density_calls += x.shape[0]
+        return func(self, x)
+    return wrapper
+
 
 class BaseSet(abc.ABC, Dataset):
     def __init__(self, len_data, is_linear=True):
@@ -19,6 +28,7 @@ class BaseSet(abc.ABC, Dataset):
         self.data_ndim = None
         self.worker = KSD(self.score, beta=0.2)
         self._gt_ksd = None
+        self.density_calls = 0
 
     @property
     def temp(self):

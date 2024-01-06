@@ -31,5 +31,5 @@ weight_decay: 1e-7
 
 data_ndim: ${datamodule.ndim}
 data_shape: ${datamodule.shape}
-dt: 0.05
+num_steps: ${num_steps}
 t_end: 5.0

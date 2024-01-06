@@ -59,8 +59,8 @@ def generate_samples_loss(
     dim = sde_model.data_ndim
     uw_term = 0
     rtn_traj = []
-    for cur_t in th.arange(0, t_end, dt).cuda():
-        x, cur_uw_term = sde_model.step_with_uw(cur_t, x, dt)
+    for cur_t in th.arange(0, t_end, dt).to(device):
+        x, cur_uw_term = sde_model.step_with_uw(cur_t, x, dt, device)
         uw_term += cur_uw_term
         rtn_traj.append(x[:30, :-1].cpu())
     state = x[:, :-1]

@@ -12,8 +12,8 @@ class VizSampleDist(Callback):
         self.every_n = every_n
         self.num_sample = num_sample
 
-    def on_batch_start(
-        self, trainer: "pl.Trainer", pl_module: "pl.LightningModule"
+    def on_train_batch_start(
+        self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", batch, batch_idx
     ) -> None:
         if trainer.global_step % self.every_n == 0:
             traj, state, loss, info = generate_samples_loss(

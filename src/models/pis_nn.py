@@ -130,8 +130,8 @@ class PISNN(nn.Module):  # pylint: disable=abstract-method, too-many-instance-at
         v[:, -self.nreg :] = v[:, -self.nreg :] * 0
         return self.f(t, y), v * self.g_coef
 
-    def step_with_uw(self, t, state, dt):
-        noise = th.randn_like(state) * np.sqrt(dt)
+    def step_with_uw(self, t, state, dt, device="cpu"):
+        noise = th.randn_like(state, device=device) * np.sqrt(dt)
         f_value, g_prod_noise = self.f_and_g_prod(t, state, noise)
         new_state = state + f_value * dt + g_prod_noise
         uw_term = (f_value[:, :-1] * noise[:, :-1]).sum(dim=1) / self.g_coef

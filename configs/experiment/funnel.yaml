@@ -21,6 +21,8 @@ name: "funnel"
 
 seed: 12345
 
+num_steps: 100
+
 trainer:
   min_epochs: 1
   max_epochs: 100

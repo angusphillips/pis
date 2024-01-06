@@ -7,7 +7,8 @@ from omegaconf import DictConfig
 from pytorch_lightning import LightningModule
 
 from src.models.loss import loss_pis
-from src.utils.sampling import generate_traj
+from src.utils.loss_helper import loss2ess_info, loss2logz_info
+from src.utils.sampling import generate_samples_loss, generate_traj
 
 # pylint: disable=too-many-ancestors,arguments-differ,attribute-defined-outside-init,unused-argument,too-many-instance-attributes, abstract-method
 
@@ -33,7 +34,7 @@ class BaseModel(LightningModule):
         self.cfg = cfg
         # TODO:
         self.data_ndim = cfg.data_ndim
-        self.dt = cfg.dt
+        self.dt = cfg.t_end / cfg.num_steps
         self.t_end = cfg.t_end
         self.register_buffer("ts", torch.tensor([1e-12, self.t_end]))
         self.instantiate()

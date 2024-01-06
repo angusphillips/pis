@@ -1,3 +1,4 @@
+import time
 from typing import List, Optional
 
 import hydra
@@ -10,8 +11,15 @@ from pytorch_lightning import (
     seed_everything,
 )
 from pytorch_lightning.loggers.logger import Logger
+import tqdm
 from src.logger.jam_wandb import JamWandb
+from src.models.base_model import BaseModel
 from src.utils import lht_utils
+import numpy as np
+
+from src.utils.loss_helper import loss2logz_info
+
+from src.utils.sampling import generate_samples_loss
 
 
 # from lightning import LightningModule, Callback, LightningDataModule, Trainer, seed_everything
@@ -53,8 +61,6 @@ def train(config: DictConfig) -> Optional[float]:
         f"Instantiating model <{config.model.module._target_}>"  # pylint: disable=protected-access
     )
     model: LightningModule = hydra.utils.instantiate(config.model.module, config.model)
-
-    print('hellooooo is the model pytorch_lightning.LightningModule?', isinstance(model, LightningModule))
 
     # Init lightning callbacks
     callbacks: List[Callback] = []
@@ -102,12 +108,60 @@ def train(config: DictConfig) -> Optional[float]:
         seed_everything(config.seed, workers=True)
     # Train the model
     log.info("Starting training!")
+    t0 = time.time()
+    start_density_calls = datamodule.dataset.density_calls
     trainer.fit(model=model, datamodule=datamodule)
-
+    t1 = time.time()
+    log.info(f"Total training time: {t1-t0}")
+    end_density_calls = datamodule.dataset.density_calls
+    log.info(f"Total density calls: {end_density_calls - start_density_calls}")
+    for lg in logger:
+        lg.log_metrics({'training_time': t1-t0, "density_calls": end_density_calls - start_density_calls}, step=0)
+    
     # Test the model
     if config.get("test_after_training") and not config.trainer.get("fast_dev_run"):
         log.info("Starting testing!")
-        trainer.test(model=model, datamodule=datamodule, ckpt_path="best")
+        # trainer.test(model=model, datamodule=datamodule, ckpt_path="best")
+
+        best_model = BaseModel.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
+        target = hydra.utils.instantiate(config.datamodule.dataset)
+        best_model.sde_model.grad_fn = target.score
+        best_model.nll_target_fn = target.energy
+        best_model.nll_prior_fn = best_model.sde_model.nll_prior
+
+        best_model.eval()
+        
+        log_Z = np.zeros(config.num_smc_iters)
+        start_time = time.time()
+        for i in tqdm.tqdm(range(config.num_smc_iters)):
+            _, _, loss, _ = generate_samples_loss(
+                best_model.sde_model,
+                best_model.nll_target_fn,
+                best_model.nll_prior_fn,
+                best_model.dt,
+                best_model.t_end,
+                2000,
+                device=best_model.device,
+            )
+            logz_info = loss2logz_info(loss)
+            log_Z[i] = logz_info["logz/loss_unbiased"]
+        end_time = time.time()
+        # Save normalising constant estimates (comment out when not doing a final evaluation run)
+        if config.save_samples:
+            np.savetxt(
+                f"/data/ziz/not-backed-up/anphilli/diffusion_smc/benchmarking_data/{config.group}_{config.name}_pis_{config.num_steps}_{config.seed}.csv",
+                log_Z,
+            )
+        # Log normalising constant estimates
+        if logger:
+            for lg in logger:
+                lg.log_metrics(
+                    {"sampling_time": (end_time - start_time) / config.num_smc_iters},
+                    step=0,
+                )
+                lg.log_metrics(
+                    {"final_log_Z": np.mean(log_Z), "var_final_log_Z": np.var(log_Z)}, 0
+                )
 
     # Make sure everything closed properly
     log.info("Finalizing!")
