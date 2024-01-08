@@ -1,0 +1,11 @@
+defaults:
+  - datamodule
+
+dataset:
+  _target_: src.datamodules.datasets.log_reg.LogReg
+  data_path: "/vols/ziz/not-backed-up/anphilli/pis/data/ionosphere_full.pkl"
+  len_data: 15000
+  dim: 35
+
+ndim: ${datamodule.dataset.dim}
+shape: ${datamodule.dataset.dim}

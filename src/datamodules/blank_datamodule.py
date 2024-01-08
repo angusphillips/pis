@@ -23,14 +23,14 @@ class DataModule(LightningDataModule):
         https://pytorch-lightning.readthedocs.io/en/latest/extensions/datamodules.html
     """
 
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, cfg: DictConfig, device):
         super().__init__()
-
+        self.device = device
         # this line allows to access init params with 'self.hparams' attribute
         # it also ensures init params will be stored in ckpt
         self.save_hyperparameters(logger=False)
         self.cfg = cfg
-        self.dataset = instantiate(cfg.dataset)
+        self.dataset = instantiate(cfg.dataset, device=self.device)
         self.dims = self.dataset.data_ndim
 
     def train_dataloader(self):

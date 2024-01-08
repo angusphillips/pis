@@ -1,0 +1,10 @@
+defaults:
+  - datamodule
+
+dataset:
+  _target_: src.datamodules.datasets.brownian.Brownian
+  len_data: 15000
+  dim: 32
+
+ndim: ${datamodule.dataset.dim}
+shape: ${datamodule.dataset.dim}

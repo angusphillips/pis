@@ -44,7 +44,7 @@ seed: null
 
 # name of the run is accessed by loggers
 # should be used along with experiment mode
-name: null
+# name: null
 
 group: ${name}
 
@@ -53,3 +53,4 @@ agpu: false
 
 num_smc_iters: 100
 save_samples: False
+num_steps: null

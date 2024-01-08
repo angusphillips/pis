@@ -17,7 +17,8 @@ def counter(func):
 
 
 class BaseSet(abc.ABC, Dataset):
-    def __init__(self, len_data, is_linear=True):
+    def __init__(self, len_data, device='cpu', is_linear=True):
+        self.device = device
         self.num_sample = len_data
         self.annealing_temp = 0.0 if is_linear else 1.0
         self.sample_energy_fn = (

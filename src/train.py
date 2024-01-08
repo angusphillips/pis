@@ -2,7 +2,7 @@ import time
 from typing import List, Optional
 
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import (
     Callback,
     LightningDataModule,
@@ -16,6 +16,7 @@ from src.logger.jam_wandb import JamWandb
 from src.models.base_model import BaseModel
 from src.utils import lht_utils
 import numpy as np
+import torch as th
 
 from src.utils.loss_helper import loss2logz_info
 
@@ -44,6 +45,8 @@ def train(config: DictConfig) -> Optional[float]:
         Optional[float]: Metric score for hyperparameter optimization.
     """
 
+    device = 'cuda' if th.cuda.is_available() else 'cpu'
+
     # Set seed for random number generators in pytorch, numpy and python.random
     if config.get("seed"):
         seed_everything(config.seed, workers=True)
@@ -53,7 +56,7 @@ def train(config: DictConfig) -> Optional[float]:
         f"Instantiating datamodule <{config.datamodule.module._target_}>"  # pylint: disable=protected-access
     )
     datamodule: LightningDataModule = hydra.utils.instantiate(
-        config.datamodule.module, config.datamodule
+        config.datamodule.module, config.datamodule, device
     )
 
     # Init lightning model
@@ -103,6 +106,9 @@ def train(config: DictConfig) -> Optional[float]:
         logger=logger,
     )
 
+    for lg in logger:
+        lg.log_hyperparams(OmegaConf.to_container(config, resolve=True))
+
     # reseed before training, encounter once after instantiation, randomness disappear
     if config.get("seed"):
         seed_everything(config.seed, workers=True)
@@ -124,7 +130,7 @@ def train(config: DictConfig) -> Optional[float]:
         # trainer.test(model=model, datamodule=datamodule, ckpt_path="best")
 
         best_model = BaseModel.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
-        target = hydra.utils.instantiate(config.datamodule.dataset)
+        target = hydra.utils.instantiate(config.datamodule.dataset, device=best_model.device)
         best_model.sde_model.grad_fn = target.score
         best_model.nll_target_fn = target.energy
         best_model.nll_prior_fn = best_model.sde_model.nll_prior
