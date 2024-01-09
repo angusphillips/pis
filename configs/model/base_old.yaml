@@ -2,12 +2,11 @@ module:
   _target_: src.models.base_model.BaseModel
 
 f_func:
-  _target_: src.networks.mlp.MLPEmbedConcat
-  hidden_shapes: [64,64,64]
-  t_hidden_shapes: [64,64]
-  x_hidden_shapes: [64,64]
-  t_emb_dim: 64
-  x_emb_dim: 64
+  _target_: jamtorch.nn.fouriermlp.FourierMLP
+  in_shape: ${model.data_ndim}
+  out_shape: ${model.data_ndim}
+  num_layers: 2
+  channels: 64
 
 g_func:
   _target_: src.networks.simple.IdentityOne

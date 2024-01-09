@@ -4,7 +4,7 @@ import numpy as np
 import torch as th
 from torch import nn
 
-from src.networks.time_conder import TimeConder
+from src.networks.time_conder import TimeConder, TimeMLP
 from src.utils.loss_helper import nll_unit_gaussian
 
 
@@ -32,7 +32,7 @@ class PISNN(nn.Module):  # pylint: disable=abstract-method, too-many-instance-at
         reg_fns,
         grad_fn=None,
         f_format="f",
-        g_coef=np.sqrt(0.2),
+        sigma=1.0,
         data_shape=2,
         t_end=1.0,
         sde_type="stratonovich",
@@ -60,7 +60,7 @@ class PISNN(nn.Module):  # pylint: disable=abstract-method, too-many-instance-at
             else data_shape
         )
         self.grad_fn = grad_fn
-        self.g_coef = g_coef
+        self.g_coef = np.sqrt(2*sigma)
 
         self.t_end = t_end
         self.select_f(f_format)
@@ -73,8 +73,8 @@ class PISNN(nn.Module):  # pylint: disable=abstract-method, too-many-instance-at
                 return th.clip(self.f_func(t, x), -self.nn_clip, self.nn_clip)
 
         elif f_format == "t_tnet_grad":
-            self.lgv_coef = TimeConder(64, 1, 3)
-
+            # self.lgv_coef = TimeConder(64, 1, 3)
+            self.lgv_coef = TimeMLP(hidden_shapes=[128, 128], t_dim=128)
             def _fn(t, x):
                 grad = th.clip(self.grad_fn(x), -self.lgv_clip, self.lgv_clip)
                 f = th.clip(self.f_func(t, x), -self.nn_clip, self.nn_clip)

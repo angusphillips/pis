@@ -31,7 +31,7 @@ class BaseModel(LightningModule):
         cfg: DictConfig,
     ):
         super().__init__()
-        self.cfg = cfg
+        self.cfg = cfg       
         # TODO:
         self.data_ndim = cfg.data_ndim
         self.dt = cfg.t_end / cfg.num_steps
@@ -44,7 +44,7 @@ class BaseModel(LightningModule):
         self.save_hyperparameters(logger=False)
 
     def instantiate(self):
-        f_func = hydra.utils.instantiate(self.cfg.f_func)
+        f_func = hydra.utils.instantiate(self.cfg.f_func, dim=self.data_ndim, device='cuda')
         g_func = hydra.utils.instantiate(self.cfg.g_func)
         self.sde_model = hyd_instantiate(
             self.cfg.sde_model, f_func, g_func, t_end=self.t_end

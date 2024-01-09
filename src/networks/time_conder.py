@@ -2,6 +2,23 @@ import torch as th
 from einops import rearrange
 from torch import nn
 
+from src.networks.mlp import MLP, get_timestep_embedding_and_rescale
+
+
+class TimeMLP(nn.Module):
+    def __init__(
+        self, hidden_shapes: list, t_dim: int = 128
+    ):
+        super().__init__()
+        self.t_dim = t_dim
+        self.nn = MLP(input_shape=t_dim, hidden_shapes=hidden_shapes, output_shape=1, zero_init=False)
+        self.nn.layers[-1].weight.data.fill_(0.0)
+        self.nn.layers[-1].bias.data.fill_(0.01)
+
+    def __call__(self, t):
+        t_emb = get_timestep_embedding_and_rescale(t.unsqueeze(-1), self.t_dim, device='cuda')
+        return self.nn(t_emb)
+
 
 class TimeConder(nn.Module):
     def __init__(self, channel, out_dim, num_layers):
