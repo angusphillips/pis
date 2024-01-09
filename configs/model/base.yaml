@@ -27,11 +27,11 @@ sdeint:
   _target_: torchsde.sdeint
   method: euler
 
-lr: 5e-3
+lr: ${lr}
 weight_decay: 1e-7
 
 
 data_ndim: ${datamodule.ndim}
 data_shape: ${datamodule.shape}
 num_steps: ${num_steps}
-t_end: 5.0
+t_end: ${t_f}

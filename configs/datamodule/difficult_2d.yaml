@@ -3,7 +3,7 @@ defaults:
 
 dataset:
   _target_: src.datamodules.datasets.difficult_2d.Difficult2D
-  len_data: 15000
+  len_data: 25600
   dim: 2
 
 ndim: ${datamodule.dataset.dim}

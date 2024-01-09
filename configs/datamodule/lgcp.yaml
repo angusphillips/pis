@@ -3,12 +3,12 @@ defaults:
 
 dataset:
   _target_: src.datamodules.datasets.cox.CoxDist
-  len_data: 1500
+  len_data: 25600
   dim: 1600
   path: /vols/ziz/not-backed-up/anphilli/pis/data/fpines.csv
 
 dl:
-  batch_size: 50
+  batch_size: 256
 
 ndim: ${datamodule.dataset.dim}
 shape: ${datamodule.dataset.dim}

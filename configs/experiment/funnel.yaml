@@ -24,12 +24,14 @@ seed: 12345
 num_steps: 100
 
 sigma: 0.1
+t_f: 1.0
+lr: 1e-4
 
 trainer:
   min_epochs: 1
-  max_epochs: 100
-  max_steps: 1500
-  log_every_n_steps: 10
+  max_epochs: 200
+  max_steps: 10000
+  log_every_n_steps: 100
   # flush_logs_every_n_steps: 10
 
 callbacks:
