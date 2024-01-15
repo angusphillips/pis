@@ -30,6 +30,8 @@ class VizSampleDist(Callback):
             ess_info = loss2ess_info(loss)
             info.update(logz_info)
             info.update(ess_info)
+            density_calls_info = {"density_calls": trainer.datamodule.dataset.density_calls}
+            info.update(density_calls_info)
             pl_module.log_dict(info, on_step=True)
             self.viz_sample(state, trainer, pl_module)
             self.viz_traj(traj, trainer, pl_module)

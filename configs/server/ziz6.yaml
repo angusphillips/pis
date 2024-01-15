@@ -4,26 +4,26 @@ defaults:
   - base
   - override /hydra/launcher: submitit_slurm
 
-n_jobs: 8
+n_jobs: 4
 num_gpus: 1
 
 hydra:
-  # job:
-  #   env_set:
-  #     WANDB_API_KEY: # include API key for logging in to wandb
+  job:
+    env_set:
+      WANDB_API_KEY: 1e9369287556bad143f9fc4a190f8dd0f7771ae6 # include API key for logging into wandb
   launcher:
     submitit_folder: ${hydra.sweep.dir}/.submitit/%j
     timeout_min: 2880
     cpus_per_task: ${num_gpus}
     tasks_per_node: 1
-    mem_gb: 4
+    mem_gb: 10
     name: ${hydra.job.name}
-    partition: high-bigbayes-gpu
+    partition: high-bigbayes-test
     max_num_timeout: 0
     array_parallelism: ${n_jobs}
     setup: ["export XLA_FLAGS='--xla_gpu_cuda_data_dir=/opt/cuda'", "export PATH=/opt/cuda/bin/:$PATH", "export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH", "export XLA_PYTHON_CLIENT_PREALLOCATE=false"]
     # setup: ["export XLA_PYTHON_CLIENT_PREALLOCATE=false"]
-    # executable: /data/ziz/not-backed-up/${oc.env:USER}/miniconda3/envs/diffusion-smc/bin/python
+    # executable: /vols/ziz/not-backed-up/anphilli/pis/.venv/bin/python
     additional_parameters: {
       "clusters": "srf_gpu_01",
       "wckey": "wck_${oc.env:USER}",
