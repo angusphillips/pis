@@ -2,12 +2,11 @@ module:
   _target_: src.models.base_model.BaseModel
 
 f_func:
-  _target_: src.networks.mlp.MLPEmbedConcat
-  hidden_shapes: [64,64,64]
-  t_hidden_shapes: [64,64]
-  x_hidden_shapes: [64,64]
-  t_emb_dim: 64
-  x_emb_dim: 64
+  _target_: src.networks.mlp.FourierMLP
+  in_shape: ${model.data_ndim}
+  out_shape: ${model.data_ndim}
+  num_layers: 2
+  channels: 64
 
 g_func:
   _target_: src.networks.simple.IdentityOne
@@ -27,11 +26,11 @@ sdeint:
   _target_: torchsde.sdeint
   method: euler
 
-lr: ${lr}
+lr: 5e-3
 weight_decay: 1e-7
 
 
 data_ndim: ${datamodule.ndim}
 data_shape: ${datamodule.shape}
 num_steps: ${num_steps}
-t_end: ${t_f}
+t_end: 5.0

@@ -33,7 +33,7 @@ trainer:
 callbacks:
   sample:
     _target_: src.callbacks.metric_cb.VizSampleDist
-    every_n: 10
+    every_n: 150
   lr:
     _target_: src.callbacks.lr.LinearScheduler
   lr_m:

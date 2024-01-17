@@ -44,7 +44,7 @@ class BaseModel(LightningModule):
         self.save_hyperparameters(logger=False)
 
     def instantiate(self):
-        f_func = hydra.utils.instantiate(self.cfg.f_func, dim=self.data_ndim, device='cuda')
+        f_func = hydra.utils.instantiate(self.cfg.f_func)#, dim=self.data_ndim, device='cuda')
         g_func = hydra.utils.instantiate(self.cfg.g_func)
         self.sde_model = hyd_instantiate(
             self.cfg.sde_model, f_func, g_func, t_end=self.t_end
