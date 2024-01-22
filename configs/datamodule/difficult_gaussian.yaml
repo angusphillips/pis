@@ -5,7 +5,7 @@ dataset:
   _target_: src.datamodules.datasets.difficult_gaussian.DifficultGaussian
   mean: 2.75
   scale: 0.25
-  len_data: 25600
+  len_data: 15000
   dim: 1
 
 ndim: ${datamodule.dataset.dim}
